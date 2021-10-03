@@ -31,7 +31,7 @@ resource "aws_security_group" "sample_sg" {
 resource "aws_instance" "sample_instance" {
   ami             = "ami-011996ff98de391d1"
   instance_type   = "t2.micro"
-  security_groups = ["${aws_security_group.sample_sg.name}"]
+  security_groups = [aws_security_group.sample_sg.name]
   tags = {
     Name = "Development Instance_1"
     env  = "development"
@@ -63,4 +63,16 @@ resource "aws_iam_role" "sample_role" {
 resource "aws_iam_policy" "Sample_policy" {
   policy = ""
 
+}
+
+resource "aws_volume_attachment" "ebs_att" {
+  device_name = "/dev/xvdb"
+  volume_id   = aws_ebs_volume.sample_volume.id
+  instance_id = aws_instance.sample_instance.id
+}
+
+
+resource "aws_ebs_volume" "sample_volume" {
+  availability_zone = "us-east-1"
+  size              = 10
 }
