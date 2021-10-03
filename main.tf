@@ -29,9 +29,10 @@ resource "aws_security_group" "sample_sg" {
 }
 
 resource "aws_instance" "sample_instance" {
-  ami             = "ami-011996ff98de391d1"
-  instance_type   = "t2.micro"
-  security_groups = [aws_security_group.sample_sg.name]
+  ami                  = "ami-011996ff98de391d1"
+  instance_type        = "t2.micro"
+  security_groups      = [aws_security_group.sample_sg.name]
+  iam_instance_profile = aws_iam_policy_attachment.Sample_policy_attachment.id
   tags = {
     Name = "Development Instance_1"
     env  = "development"
@@ -60,9 +61,10 @@ resource "aws_iam_role" "sample_role" {
   }
 }
 
-resource "aws_iam_policy" "Sample_policy" {
-  policy = ""
-
+resource "aws_iam_policy_attachment" "Sample_policy_attachment" {
+  name       = "dev Policy attachment "
+  roles      = [aws_iam_role.sample_role.id]
+  policy_arn = "aws_iam_policy.policy.arn"
 }
 
 resource "aws_volume_attachment" "ebs_att" {
