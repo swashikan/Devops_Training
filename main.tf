@@ -49,7 +49,7 @@ resource "aws_instance" "sample_instance" {
 }
 
 resource "aws_iam_role" "sample_role" {
-  name = "Development Role_1"
+  name = "Development-Role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
