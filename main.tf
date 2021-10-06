@@ -1,14 +1,13 @@
 resource "aws_security_group" "sample_sg" {
   name        = "dev_first_sg"
   description = "Creating new sg"
-  vpc_id      = "vpc-07925b579b02ffe66"
 
   ingress = [
     {
       description      = "Incoming traffic"
       from_port        = 22
       to_port          = 22
-      protocol         = "tcp"
+      protocol         = "TCP"
       ipv6_cidr_blocks = ["::/0"]
       prefix_list_ids  = null
       security_groups  = null
@@ -41,9 +40,8 @@ resource "aws_security_group" "sample_sg" {
 resource "aws_instance" "sample_instance" {
   ami                  = "ami-011996ff98de391d1"
   instance_type        = "t2.micro"
-  security_groups      = [aws_security_group.sample_sg.name]
-  iam_instance_profile = aws_iam_policy_attachment.Sample_policy_attachment.id
-  availability_zone    = "us-east-1"
+  security_groups      = ["${aws_security_group.sample_sg.name}"]
+  iam_instance_profile = aws_iam_instance_profile.sample-instance-profile.id
   tags = {
     Name = "Development Instance_1"
     env  = "development"
@@ -51,6 +49,7 @@ resource "aws_instance" "sample_instance" {
 }
 
 resource "aws_iam_role" "sample_role" {
+  name = "devRole"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -73,6 +72,24 @@ resource "aws_iam_role" "sample_role" {
 
 resource "aws_iam_policy_attachment" "Sample_policy_attachment" {
   name       = "dev_policy_attachment"
-  roles      = [aws_iam_role.sample_role.id]
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
+  roles      = [aws_iam_role.sample_role.id]
+}
+
+resource "aws_iam_instance_profile" "sample-instance-profile" {
+  name = "instanceprofile"
+  role = aws_iam_role.sample_role.name
+}
+
+
+resource "aws_volume_attachment" "sample_volume_attachment" {
+  device_name = "/dev/xvdb"
+  volume_id   = aws_ebs_volume.sample_volume.id
+  instance_id = aws_instance.sample_instance.id
+}
+
+
+resource "aws_ebs_volume" "sample_volume" {
+  availability_zone = "us-west-1a"
+  size              = 5
 }
