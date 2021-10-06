@@ -81,6 +81,10 @@ resource "aws_iam_instance_profile" "sample-instance-profile" {
   role = aws_iam_role.sample_role.name
 }
 
+resource "aws_ebs_volume" "sample_volume" {
+  availability_zone = "us-west-1a"
+  size              = 5
+}
 
 resource "aws_volume_attachment" "sample_volume_attachment" {
   device_name = "/dev/xvdb"
@@ -88,8 +92,3 @@ resource "aws_volume_attachment" "sample_volume_attachment" {
   instance_id = aws_instance.sample_instance.id
 }
 
-
-resource "aws_ebs_volume" "sample_volume" {
-  availability_zone = "us-west-1a"
-  size              = 5
-}
