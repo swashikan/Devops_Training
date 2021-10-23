@@ -16,6 +16,7 @@ resource "aws_security_group" "sample_sg" {
     }
   ]
 
+
   egress = [
     {
       from_port        = 0
@@ -37,10 +38,20 @@ resource "aws_security_group" "sample_sg" {
 resource "aws_instance" "sample_instance" {
   ami                  = var.amiid
   instance_type        = var.machinetype
-  availability_zone = var.avaloc
+  availability_zone    = var.avaloc
+  key_name             = "mobax"
   security_groups      = [aws_security_group.sample_sg.name]
   iam_instance_profile = aws_iam_instance_profile.sample-instance-profile.id
-  tags = var.mytag
+  user_data            = <<-EOF
+  #!/bin/bash
+  sudo yum update -y
+  sudo yum install -y httpd docker
+  sudo systemctl start httpd
+  sudo systemctl enable httpd
+  sudo systemctl start docker
+  sudo systemctl enable docker
+  EOF
+  tags                 = var.mytag
 }
 
 resource "aws_iam_role" "sample_role" {
